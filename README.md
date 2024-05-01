@@ -1,4 +1,9 @@
 # Roblox-Mass-Tools
+## Next update at 15 ⭐
+- Mass Steal + Upload clothes
+- Mass create gamepasses
+- Spams a user inbox messages
+
 ### Setup
 1. Open settings.json
 2. Put the roblox account cookie in there

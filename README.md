@@ -7,6 +7,7 @@
 - Mass gamepass creator
 - More informations in 'Display Cookie Info'
 - More features to Account Nuker
+- Group Info Checker
 
 ### Setup
 1. Open settings.json

@@ -2,7 +2,7 @@
 ### Setup
 1. Open settings.json
 2. Put the roblox account cookie in there
-3. If the cookie is from someone else, Change `Bypass` to `True`
+3. If the cookie is from someone else, Change `Bypass` to `true`
 4. Install the packages in requirements.txt if you don't have them
 5. Run main.py
 ### Features:

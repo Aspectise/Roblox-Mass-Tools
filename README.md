@@ -43,4 +43,4 @@
 - If you like the tool please star the repo 😊
 
 ## Help
-If you need help setting up the bot join the [Discord](https://discord.gg/deathsniper)
+If you need help or want to report an error join the [Discord](https://discord.gg/deathsniper)

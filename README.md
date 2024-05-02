@@ -4,7 +4,6 @@
 - Mass create gamepasses
 - Spams a user inbox messages
 - Randomize Avatar
-- Mass gamepass creator
 - More informations in 'Display Cookie Info'
 - More features to Account Nuker
 - Group Info Checker

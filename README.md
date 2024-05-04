@@ -2,6 +2,7 @@
 ## Next update at 25 ⭐
 - Save progress for Pin Cracker
 - Multi-Cookies for all tools
+- Suggestions ideas that you would like in the tool
 
 ### Setup
 1. Open settings.json

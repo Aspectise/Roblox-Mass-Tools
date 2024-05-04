@@ -4,7 +4,7 @@
 - Multi-Cookies for all tools
 - Mass delete fits
 - Mass create fits
-- Suggestions ideas that you would like in the tool
+- Suggest ideas that you would like in the tool
 
 ### Setup
 1. Open settings.json

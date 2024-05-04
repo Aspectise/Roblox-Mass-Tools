@@ -1,10 +1,8 @@
-from .unfavorite import start
-from .unfollow import start
-from .nuke import start
-from .del_tshirts import start
-from .unfriend import start
-from .pin_crack import start
-from .steal_cloth import start
-from .info import start
-from .bypass import start
-from .leaver import start
+import pkgutil
+import importlib
+
+__all__ = []
+for module_info in pkgutil.iter_modules(__path__):
+    __all__.append(module_info.name)
+    module = importlib.import_module(f"{__name__}.{module_info.name}")
+    globals()[module_info.name] = module

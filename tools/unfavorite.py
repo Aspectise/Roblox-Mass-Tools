@@ -22,7 +22,7 @@ async def start(self):
 
                         choice = cprint.user_input(f"Do you want to unfavorite: {game_name} (ID: {game_id})? (y/N): ")
                         if choice in ["yes", "y"]:
-                            await unfavorite(session, game)
+                            await unfavorite(session, game, self.cookie)
                             continue
                 else:
                     xcsrf = csrf.get(self.cookie)

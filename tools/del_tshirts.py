@@ -18,7 +18,7 @@ async def start(self):
             cprint.info("No t-shirts found.")
 
 async def get_tshirts(session, id):
-    async with session.get(f"https://www.roblox.com/users/inventory/list-json?assetTypeId=2&cursor=&itemsPerPage=10000000&pageNumber=1&userId={id}", ssl=False) as response:
+    async with session.get(f"https://www.roblox.com/users/inventory/list-json?assetTypeId=2&cursor=&itemsPerPage=10000000&userId={id}", ssl=False) as response:
         if response.status == 200:
             data = await response.json()
             return data.get("Data").get("Items")

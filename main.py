@@ -1,28 +1,28 @@
 import os
-import shutil
 import json
-import getpass
 import time
+import tools
+import shutil
+import getpass
 import asyncio
 import aiohttp
 import requests
-from rgbprint import gradient_print, Color, rgbprint
 from src import cprint
-import tools
+from rgbprint import Color, rgbprint
 
 os.system('cls' if os.name == 'nt' else 'clear')
 settings = json.load(open("settings.json", "r"))
 class Main:
     def __init__(self) -> None:
         self.cookie = settings.get("Cookie_section").get("Cookie")
-        self.version = "1.0.0"
+        self.version = "1.1.0"
 
         self.check_version()
 
         cprint.info(f"Checking the cookie...")
         if settings.get("Cookie_section").get("Bypass"):
             cprint.info(f"Bypassing the cookie...")
-            self.cookie = tools.bypass.start(self, 1)
+            self.cookie = tools.region_bypass.start(self, 1)
 
         self.username, self.id = asyncio.run(self.check_cookie())
         cprint.custom(f"Logged in as {self.username}!", "SUCCESS", (0,255,0))
@@ -72,7 +72,7 @@ class Main:
                 os._exit(0)
 
 
-    def display_theme(self, page=None):
+    def display_theme(self, banner=None):
         os.system('cls' if os.name == 'nt' else 'clear')
         MAIN_COLOR: Color = Color(0xA080FF)
         ACCENT_COLOR: Color = Color(255, 255, 255)
@@ -94,6 +94,7 @@ class Main:
         ║ {TEXT_IN_BOX} {self.version} ║
         ╚═{"═" * (len(TEXT_IN_BOX) + len(self.version) + 1)}═╝
         """
+
         OPTIONS: dict[str, str] = {
     "01": "Display Cookie Info",
     "02": "Mass Group Leaver",
@@ -104,9 +105,20 @@ class Main:
     "07": "Unregion Lock Cookie",
     "08": "Nuke Account/Cookie",
     "09": "Pin Cracker",
-    "10": "Steal Group Clothes"}
+    "10": "Steal Group Clothes",
+
+    "11": "Mass Create Gamepasses",
+    "12": "Spam User Inbox",
+    "13": "Check Group ID",
+    "14": "Randomize Avatar",
+    "15": "Upload Clothes",
+    "16": "SOON",
+    "17": "SOON",
+    "18": "SOON",
+    "19": "SOON",
+    "20": "SOON"
+    }
         
-        NEXT_PAGE: str = f"[00] -> Next Page (SOON)"
         OPTIONS_SPACING: str = f"{str().ljust(30)}"
 
         def _get_shell_size() -> int:
@@ -125,10 +137,10 @@ class Main:
         _print_centered(TITLE, color=MAIN_COLOR)
         _print_centered(SIGNATURE, color=ACCENT_COLOR)
         print()
-        if page is None:
-            _print_centered(NEXT_PAGE, color=ACCENT_COLOR)
+
+        if banner is None:
             previous_batch = None
-            for batch in batched(map(lambda x: f"[{x[0]}] -> {x[1]}", OPTIONS.items()), 5):
+            for batch in batched(map(lambda x: f"[{x[0]}] -> {x[1]}", OPTIONS.items()), 10):
                 if previous_batch is None:
                     previous_batch = batch
                     continue
@@ -159,33 +171,28 @@ class Main:
                 continue
 
             choice = int(choice)
-            if str(choice).zfill(2) not in ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10']:
+            if f"{choice:02d}" not in [f"{i:02d}" for i in range(21)]:
                 cprint.error(f"Please provide a valid option.")
                 time.sleep(1)
                 continue
             
             try:
                 if str(choice).zfill(2) == '00': continue
-
-                if str(choice).zfill(2) == '01': await tools.info.start(self)
-
-                if str(choice).zfill(2) == '02': await tools.leaver.start(self)
-
+                if str(choice).zfill(2) == '01': await tools.cookie_info.start(self)
+                if str(choice).zfill(2) == '02': await tools.group_leaver.start(self)
                 if str(choice).zfill(2) == '03': await tools.unfavorite.start(self)
-
                 if str(choice).zfill(2) == '04': await tools.unfollow.start(self)
-
                 if str(choice).zfill(2) == '05': await tools.unfriend.start(self)
-
                 if str(choice).zfill(2) == '06': await tools.del_tshirts.start(self)
-
-                if str(choice).zfill(2) == '07': tools.bypass.start(self)
-
-                if str(choice).zfill(2) == '08': await tools.nuke.start(self)
-
+                if str(choice).zfill(2) == '07': tools.region_bypass.start(self)
+                if str(choice).zfill(2) == '08': await tools.nuker.start(self)
                 if str(choice).zfill(2) == '09': await tools.pin_crack.start(self)
-
                 if str(choice).zfill(2) == '10': await tools.steal_cloth.start(self)
+                if str(choice).zfill(2) == '11': await tools.create_gamepass.start(self)
+                if str(choice).zfill(2) == '12': await tools.inbox_message.start(self)
+                if str(choice).zfill(2) == '13': await tools.group_check.start(self)
+                if str(choice).zfill(2) == '14': await tools.randomize_avatar.start(self)
+                if str(choice).zfill(2) == '15': await tools.publish_cloth.start(self)
             except Exception as e:
                 cprint.error(e)
 

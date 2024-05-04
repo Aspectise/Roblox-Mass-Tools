@@ -1,5 +1,5 @@
 import requests
-from rgbprint import gradient_print, Color, rgbprint
+from rgbprint import Color
 
 def get(cookie) -> str:
     response = requests.post("https://economy.roblox.com/", cookies = {".ROBLOSECURITY": cookie})

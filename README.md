@@ -1,7 +1,7 @@
 # Roblox-Mass-Tools
 ## Next update at 25 ⭐
 - Save progress for Pin Cracker
-- Idk what else, suggest me ideas
+- Multi-Cookies for all tools
 
 ### Setup
 1. Open settings.json

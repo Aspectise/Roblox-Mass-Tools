@@ -22,13 +22,13 @@ async def start(self):
 
                         choice = cprint.user_input(f"Do you want to unfavorite: {game_name} (ID: {game_id})? (y/N): ")
                         if choice in ["yes", "y"]:
-                            await unfavorite(session, game, self.cookie)
+                            await unfavorite(session, game)
                             continue
                 else:
                     xcsrf = csrf.get(self.cookie)
                     session.headers.update({"X-Csrf-Token": xcsrf})
 
-                    tasks = [asyncio.create_task(fast_unfavorite(session, game, self.cookie)) for game in games]
+                    tasks = [asyncio.create_task(fast_unfavorite(session, game)) for game in games]
                     await asyncio.gather(*tasks)
 
             if games == []:

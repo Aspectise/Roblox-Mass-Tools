@@ -21,23 +21,19 @@ async def start(self):
                         break
                     except ValueError:continue
 
-                if await check_owner(session, group_id, self.id):
-                    png_files = [file for file in os.listdir('clothes') if file.lower().endswith('.png')]
-                    if not png_files:
-                        cprint.error("No clothes found in the 'clothes' folder, steal some clothes before uploading.")
-                        return
+                png_files = [file for file in os.listdir('clothes') if file.lower().endswith('.png')]
+                if not png_files:
+                    cprint.error("No clothes found in the 'clothes' folder, steal some clothes before uploading.")
+                    return
 
+                for file_name in png_files:
+                    xcsrf = csrf.get(self.cookie)
+                    session.headers.update({"X-Csrf-Token": xcsrf})
 
-                    for file_name in png_files:
-                        xcsrf = csrf.get(self.cookie)
-                        session.headers.update({"X-Csrf-Token": xcsrf})
-
-                        file_path = os.path.join('clothes', file_name)
-                        cprint.info(f"Uploading \"{file_path}\"...")
-                        data = decode(file_path)
-                        await publish(session, file_path, data, group_id)
-                else:
-                    cprint.error("You can't upload clothes to this group.")
+                    file_path = os.path.join('clothes', file_name)
+                    cprint.info(f"Uploading \"{file_path}\"...")
+                    data = decode(file_path)
+                    await publish(session, file_path, data, group_id)
     except Exception:
         traceback.print_exc()
                 
@@ -92,16 +88,3 @@ async def release(session, id):
 def decode(file_path):
     with Image.open(file_path) as img: metadata = img.info
     return metadata
-
-async def check_owner(session, group_id, id):
-    async with session.get(f"https://groups.roblox.com/v1/groups/{group_id}", ssl=False) as response:
-        if response.status == 200:
-            data = await response.json()
-            owner_id = data.get("owner").get("userId")
-            if owner_id == id:
-                return True
-            else:
-                return False
-        else:
-            cprint.error(f"Failed to check group ownership: {response.status}")
-            return None

@@ -2,6 +2,8 @@
 ## Next update at 25 ⭐
 - Save progress for Pin Cracker
 - Multi-Cookies for all tools
+- Mass delete fits
+- Mass create fits
 - Suggestions ideas that you would like in the tool
 
 ### Setup

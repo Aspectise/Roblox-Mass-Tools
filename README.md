@@ -41,6 +41,11 @@
 - [x] - **Steal Group Clothes**
   - [x] - **Detects Copyrighted assets**
   - [x] - **Changes Assets Template**
+- [x] - **Upload clothes** 
+- [x] - **Mass Create Gamepasses** 
+- [x] - **Spam User Inbox** 
+- [x] - **Check Group ID** 
+- [x] - **Randomize Avatar** 
 - [x] - **More soon** 
 
 ## Preview:

@@ -2,4 +2,3 @@ aiohttp
 rgbprint
 requests
 pillow
-random

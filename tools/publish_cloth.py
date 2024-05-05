@@ -59,7 +59,7 @@ async def publish(session, image_path, data, group_id):
             cprint.success(f"Successfully uploaded clothing ({data['name']})")
             status_data = await check_cloth(session, cdata)
             if status_data:
-                await release(session, status_data["assetId"])
+                await release(session, status_data['response']["assetId"])
         else:
             text = await response.text()
             cprint.error(f"Failed to upload cloth: {text}")

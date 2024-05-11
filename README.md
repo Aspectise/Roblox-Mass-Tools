@@ -11,6 +11,7 @@
 4. Install the packages in requirements.txt if you don't have them
 5. Run main.py
 ### Features:
+- [x] - **Multi-Cookies**
 - [x] - **Display Cookie Info**
   - [x] - **Display Birthday**
   - [x] - **Display Gender**
@@ -43,11 +44,13 @@
 - [x] - **Mass Create Gamepasses** 
 - [x] - **Spam User Inbox** 
 - [x] - **Check Group ID** 
-- [x] - **Randomize Avatar** 
+- [x] - **Randomize Avatar**
+- [x] - **Mass Create Outfits**
+- [x] - **Mass Delete Outfits** 
 - [x] - **More soon** 
 
 ## Preview:
-![image](https://github.com/Aspectise/Roblox-Mass-Tools/assets/90333100/b517218e-208d-48de-b529-5b7e88a7e8a9)
+![image](https://github.com/Aspectise/Roblox-Mass-Tools/assets/90333100/c0bc9892-05a5-4e7d-b636-c30571930214)
 
 ## ⭐
 - If you like the tool please star the repo 😊

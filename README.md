@@ -1,9 +1,7 @@
 # Roblox-Mass-Tools
-## Next update at 25 ⭐
-- Save progress for Pin Cracker
-- Multi-Cookies for all tools
-- Mass delete fits
-- Mass create fits
+## Next update at 35 ⭐
+- Ally Bot
+- Mass delete gamepasses
 - Suggest ideas that you would like in the tool
 
 ### Setup

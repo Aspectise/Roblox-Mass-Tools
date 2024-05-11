@@ -14,18 +14,48 @@ os.system('cls' if os.name == 'nt' else 'clear')
 settings = json.load(open("settings.json", "r"))
 class Main:
     def __init__(self) -> None:
-        self.cookie = settings.get("Cookie_section").get("Cookie")
-        self.version = "1.1.0"
-
+        self.cookie = settings.get("Main_Cookie").get("Cookie")
+        self.version = "1.2.0"
+        self.multicookies = []
+        self.main_cookie = {self.cookie: {"cookie":self.cookie, "name": None, "id": None}}
         self.check_version()
 
         cprint.info(f"Checking the cookie...")
-        if settings.get("Cookie_section").get("Bypass"):
+        if settings.get("Main_Cookie").get("Bypass"):
             cprint.info(f"Bypassing the cookie...")
             self.cookie = tools.region_bypass.start(self, 1)
+            if not self.cookie:
+                cprint.info("Falling back to normal checking... ")
+                self.cookie = settings.get("Main_Cookie").get("Cookie")
 
-        self.username, self.id = asyncio.run(self.check_cookie())
-        cprint.custom(f"Logged in as {self.username}!", "SUCCESS", (0,255,0))
+        asyncio.run(self.check_cookie(self.cookie))
+        cprint.success(f"Logged in as {self.main_cookie[self.cookie]['name']}!")
+        if os.path.exists('cookies.txt'):
+            with open('cookies.txt', 'r') as f:
+                for line in f:
+                    if line.startswith('_|WARNING:-DO-NOT-SHARE-THIS.--Sharing-this-will-allow-someone-to-log-in-as-you-and-to-steal-your-ROBUX-and-items.|'):
+                        self.multicookies.append(line.strip())
+
+            if len(self.multicookies) >= 1:
+                while True:
+                    cookie_amount = cprint.user_input(f"You have {len(self.multicookies)} cookies, how many do you want to use? > ")
+                    try:
+                        cookie_amount = int(cookie_amount)
+                        if cookie_amount < 0 or cookie_amount > len(self.multicookies):
+                            cprint.error(f"Number should be equal or lower to {len(self.multicookies)}")
+                            continue
+
+                        if cookie_amount == 0:
+                            self.multicookies = []
+                        else:
+                            self.multicookies = self.multicookies[:cookie_amount]
+
+                        break
+                    except ValueError:
+                        continue
+
+                if self.multicookies:
+                    asyncio.run(self.multi_cookie())
         time.sleep(2)
 
         os.system('cls' if os.name == 'nt' else 'clear')
@@ -47,25 +77,40 @@ class Main:
         except:
             pass
 
+    async def multi_cookie(self):
+        self.multicookies_data = {cookie: {"cookie": cookie, "name": None, "id": None} for cookie in self.multicookies} 
+        tasks = [asyncio.create_task(self.check_cookie(cookie, 1)) for cookie in self.multicookies]
+        await asyncio.gather(*tasks)
+
     def get_username(self):
         if os.name == 'nt':
             return os.environ.get('USERNAME')
         else: 
             return getpass.getuser()
 
-    async def check_cookie(self):
-        async with aiohttp.ClientSession(cookies={".ROBLOSECURITY": self.cookie}) as session:
+    async def check_cookie(self, cookie, mass=None):
+        async with aiohttp.ClientSession(cookies={".ROBLOSECURITY": cookie}) as session:
             try:
                 async with session.get("https://users.roblox.com/v1/users/authenticated") as response:
                     if response.status == 200:
                         data = await response.json()
                         name = data.get("name")
                         id = data.get("id")
-                        return name, id
+                        if not mass:
+                            self.main_cookie[cookie]["name"] = name
+                            self.main_cookie[cookie]["id"] = id
+                        else:
+                            self.multicookies_data[cookie]["name"] = name
+                            self.multicookies_data[cookie]["id"] = id
+                            cprint.success(f"Logged in {name}!")
                     else:
-                        cprint.error(f"Please provide a valid cookie.")
-                        os.system("pause")
-                        os._exit(0)
+                        if not mass:
+                            cprint.error(f"Please provide a valid cookie.")
+                            os.system("pause")
+                            os._exit(0)
+                        else:
+                            cprint.error(f"Invalid cookie.")
+                            return None
             except Exception as e:
                 cprint.error(f"Please provide a valid cookie.")
                 os.system("pause")
@@ -112,8 +157,8 @@ class Main:
     "13": "Check Group ID",
     "14": "Randomize Avatar",
     "15": "Upload Clothes",
-    "16": "SOON",
-    "17": "SOON",
+    "16": "Mass Create Outfits",
+    "17": "Mass Delete Outfits",
     "18": "SOON",
     "19": "SOON",
     "20": "SOON"
@@ -152,6 +197,20 @@ class Main:
                     _print_centered(f"{previous_element:{max_previous_page}}{OPTIONS_SPACING}{batch[i]:{max_page}}", color=ACCENT_COLOR)
         print()
 
+    async def handle(self, tool):
+        if self.multicookies:
+            choice = cprint.user_input("Use main cookie? (y/N) > ").lower()
+            if choice in ["y", "yes"]:
+                await tool.start(self, list(self.main_cookie.values()))
+            else:
+                if len(self.multicookies) > 1:
+                    amount = cprint.user_input("How many cookies to use? > ")
+                    await tool.start(self, list(self.multicookies_data.values())[:int(amount)])
+                else:
+                    await tool.start(self, list(self.multicookies_data.values()))
+        else:
+            await tool.start(self, list(self.main_cookie.values()))
+
     async def main(self):
         while True:
             self.display_theme()
@@ -179,21 +238,25 @@ class Main:
             try:
                 if str(choice).zfill(2) == '00': continue
                 if str(choice).zfill(2) == '01': await tools.cookie_info.start(self)
-                if str(choice).zfill(2) == '02': await tools.group_leaver.start(self)
-                if str(choice).zfill(2) == '03': await tools.unfavorite.start(self)
-                if str(choice).zfill(2) == '04': await tools.unfollow.start(self)
-                if str(choice).zfill(2) == '05': await tools.unfriend.start(self)
-                if str(choice).zfill(2) == '06': await tools.del_tshirts.start(self)
+                if str(choice).zfill(2) == '02': await self.handle(tools.group_leaver)
+                if str(choice).zfill(2) == '03': await self.handle(tools.unfavorite)
+                if str(choice).zfill(2) == '04': await self.handle(tools.unfollow)
+                if str(choice).zfill(2) == '05': await self.handle(tools.unfriend)
+                if str(choice).zfill(2) == '06': await self.handle(tools.del_tshirts)
                 if str(choice).zfill(2) == '07': tools.region_bypass.start(self)
                 if str(choice).zfill(2) == '08': await tools.nuker.start(self)
                 if str(choice).zfill(2) == '09': await tools.pin_crack.start(self)
                 if str(choice).zfill(2) == '10': await tools.steal_cloth.start(self)
-                if str(choice).zfill(2) == '11': await tools.create_gamepass.start(self)
-                if str(choice).zfill(2) == '12': await tools.inbox_message.start(self)
+                if str(choice).zfill(2) == '11': await self.handle(tools.create_gamepass)
+                if str(choice).zfill(2) == '12': await self.handle(tools.inbox_message)
                 if str(choice).zfill(2) == '13': await tools.group_check.start(self)
-                if str(choice).zfill(2) == '14': await tools.randomize_avatar.start(self)
+                if str(choice).zfill(2) == '14': await self.handle(tools.randomize_avatar)
                 if str(choice).zfill(2) == '15': await tools.publish_cloth.start(self)
+                if str(choice).zfill(2) == '16': await self.handle(tools.create_outfits)
+                if str(choice).zfill(2) == '17': await self.handle(tools.delete_fits)
             except Exception as e:
+                import traceback
+                traceback.print_exc()
                 cprint.error(e)
 
             choice = input(f"""\n{Color(0xA080FF)}┌───({Color(255, 255, 255)}{username_pc}@root{Color(0xA080FF)})─[{Color(255, 255, 255)}~{Color(0xA080FF)}]

@@ -2,20 +2,21 @@ import aiohttp
 import asyncio
 from src import csrf, cprint
 
-async def start(self):
-    async with aiohttp.ClientSession(cookies={".ROBLOSECURITY": self.cookie}) as session:
-        tshirts = await get_tshirts(session, self.id)
-        self.display_theme(1)
-        cprint.info(f"Gathered {len(tshirts)} t-shirts!")
-        if tshirts is not None and len(tshirts) >= 1:
-            xcsrf = csrf.get(self.cookie)
-            session.headers.update({"X-Csrf-Token": xcsrf})
+async def start(self, cookies):
+    for user in cookies:
+        async with aiohttp.ClientSession(cookies={".ROBLOSECURITY": user['cookie']}) as session:
+            tshirts = await get_tshirts(session, user['id'])
+            self.display_theme(1)
+            cprint.info(f"Gathered {len(tshirts)} t-shirts!")
+            if tshirts is not None and len(tshirts) >= 1:
+                xcsrf = csrf.get(user['cookie'])
+                session.headers.update({"X-Csrf-Token": xcsrf})
 
-            tasks = [asyncio.create_task(delete(session, item)) for item in tshirts]
-            await asyncio.gather(*tasks)
-        
-        if tshirts == []:
-            cprint.info("No t-shirts found.")
+                tasks = [asyncio.create_task(delete(session, item)) for item in tshirts]
+                await asyncio.gather(*tasks)
+
+            if tshirts == []:
+                cprint.info("No t-shirts found.")
 
 async def get_tshirts(session, id):
     async with session.get(f"https://www.roblox.com/users/inventory/list-json?assetTypeId=2&cursor=&itemsPerPage=10000000&userId={id}", ssl=False) as response:

@@ -1,5 +1,5 @@
 import requests
-from rgbprint import gradient_print, Color, rgbprint
+from rgbprint import Color
 from src import cprint
 
     

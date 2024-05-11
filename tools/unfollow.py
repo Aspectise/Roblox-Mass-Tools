@@ -3,19 +3,20 @@ import asyncio
 import traceback
 from src import csrf, cprint
 
-async def start(self):
+async def start(self, cookies):
     try:
-        async with aiohttp.ClientSession(cookies={".ROBLOSECURITY": self.cookie}) as session:
-            following_count = await get_following_count(session, self.id)
-            self.display_theme(1)
-            cprint.info(f"You are currently following {following_count} users")
-            followings = await get_followings(session, self.id)
+        for user in cookies:
+            async with aiohttp.ClientSession(cookies={".ROBLOSECURITY": user['cookie']}) as session:
+                following_count = await get_following_count(session, user['id'])
+                self.display_theme(1)
+                cprint.info(f"{user['name']} is currently following {following_count} users")
+                followings = await get_followings(session, user['id'])
 
-            xcsrf = csrf.get(self.cookie)
-            session.headers.update({"X-Csrf-Token": xcsrf})
+                xcsrf = csrf.get(user['cookie'])
+                session.headers.update({"X-Csrf-Token": xcsrf})
 
-            tasks = [asyncio.create_task(unfollow(session, following["id"], following["name"])) for following in followings]
-            await asyncio.gather(*tasks)
+                tasks = [asyncio.create_task(unfollow(session, following["id"], following["name"])) for following in followings]
+                await asyncio.gather(*tasks)
     except Exception as e:
         traceback.print_exc()
 

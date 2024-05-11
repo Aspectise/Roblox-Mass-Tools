@@ -3,50 +3,52 @@ import asyncio
 
 from src import cprint, csrf
 
-async def start(self):
-    async with aiohttp.ClientSession(cookies={".ROBLOSECURITY": self.cookie}) as session:
-        self.display_theme(1)
-        while True:
-            game_id = cprint.user_input("Enter the game id > ")
-            amount = cprint.user_input("How many gamepases do you want to create? > ")
-            try:
-                game_id = int(game_id)
-                amount = int(amount)
-                break
-            except ValueError:
-                cprint.error("Invalid game id/amount.")
-                continue
-
-        while True:
-            global_price = None
-            choice = cprint.user_input("Do you want to specify a price for each gamepass (1) or specify a price for all gamepasses (2)? (1/2) > ")
-
-            if choice not in ['1', '2']:
-                continue
-
-            if choice == '2':
-                global_price = cprint.user_input("Enter the gamepasses's price > ")
+async def start(self, cookies):
+    for user in cookies:
+        async with aiohttp.ClientSession(cookies={".ROBLOSECURITY": user['cookie']}) as session:
+            self.display_theme(1)
+            while True:
+                cprint.info(f"Account: {user['name']}")
+                game_id = cprint.user_input("Enter the game id > ")
+                amount = cprint.user_input("How many gamepases do you want to create? > ")
                 try:
-                    global_price = int(global_price)
+                    game_id = int(game_id)
+                    amount = int(amount)
                     break
                 except ValueError:
-                    cprint.error("Price must be a number")
-            else:
-                break
-
-        
-        unv_id = await get_game(session, game_id)
-        if unv_id:
-            verify = await verify_game(session, unv_id, self.id)
-            if verify:
-                xcsrf = csrf.get(self.cookie)
-                session.headers.update({"X-Csrf-Token": xcsrf})
-                if global_price is not None:
-                    tasks = [asyncio.create_task(create(session, unv_id, global_price)) for i in range(amount)]
-                    await asyncio.gather(*tasks)
+                    cprint.error("Invalid game id/amount.")
+                    continue
+                
+            while True:
+                global_price = None
+                choice = cprint.user_input("Do you want to specify a price for each gamepass (1) or specify a price for all gamepasses (2)? (1/2) > ")
+    
+                if choice not in ['1', '2']:
+                    continue
+                
+                if choice == '2':
+                    global_price = cprint.user_input("Enter the gamepasses's price > ")
+                    try:
+                        global_price = int(global_price)
+                        break
+                    except ValueError:
+                        cprint.error("Price must be a number")
                 else:
-                    for i in range(amount):
-                        await create(session, unv_id, global_price)
+                    break
+                
+                
+            unv_id = await get_game(session, game_id)
+            if unv_id:
+                verify = await verify_game(session, unv_id, user['id'])
+                if verify:
+                    xcsrf = csrf.get(user['cookie'])
+                    session.headers.update({"X-Csrf-Token": xcsrf})
+                    if global_price is not None:
+                        tasks = [asyncio.create_task(create(session, unv_id, global_price)) for i in range(amount)]
+                        await asyncio.gather(*tasks)
+                    else:
+                        for i in range(amount):
+                            await create(session, unv_id, global_price)
 
 
         

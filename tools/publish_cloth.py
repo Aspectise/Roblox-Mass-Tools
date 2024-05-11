@@ -6,42 +6,54 @@ import json
 from PIL import Image
 from PIL.PngImagePlugin import PngInfo
 import traceback
+import re
 
 from src import cprint, csrf
 
 async def start(self):
     try:
         async with aiohttp.ClientSession(cookies={".ROBLOSECURITY": self.cookie}) as session:
-            choice = cprint.user_input("This will cost you 10 robux for each upload, are you sure you want to continue? (y/N) > ")
+            choice = cprint.user_input("This will cost you 10 robux for each upload, are you sure you want to continue? (y/N) > ").lower()
             if choice in ['yes', 'y']:
                 while True:
                     group_id = cprint.user_input("Enter the group id you want to upload the clothes to > ")
+                    max_robux = cprint.user_input("How much robux to spend before stopping? > ")
                     try:
                         group_id = int(group_id)
+                        max_robux = int(max_robux)
                         break
-                    except ValueError:continue
+                    except ValueError:
+                        continue
 
                 png_files = [file for file in os.listdir('clothes') if file.lower().endswith('.png')]
                 if not png_files:
                     cprint.error("No clothes found in the 'clothes' folder, steal some clothes before uploading.")
                     return
-
+                
                 for file_name in png_files:
+                    if await robux(session, self.main_cookie[self.cookie]['id']) <= max_robux:
+                        cprint.info(f"Hit the max robux limit of {max_robux} R$, stopping.")
+                        break
+
                     xcsrf = csrf.get(self.cookie)
                     session.headers.update({"X-Csrf-Token": xcsrf})
-
                     file_path = os.path.join('clothes', file_name)
                     cprint.info(f"Uploading \"{file_path}\"...")
                     data = decode(file_path)
+                    if 'name' not in data:
+                        cprint.error(f"Invalid image or old image ({file_path})")
+                        continue
                     await publish(session, file_path, data, group_id)
     except Exception:
         traceback.print_exc()
                 
 async def publish(session, image_path, data, group_id):
     form_data = FormData()
+    description = data["description"]
+    new_description = re.sub(r'(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#/%?=~_|!:,.;]*[-A-Z0-9+&@#/%=~_|])|\b(www\.[^\s]+)', '', description, flags=re.IGNORECASE)
     payload = {
         "displayName": data["name"],
-        "description": data["description"],
+        "description": new_description,
         "assetType": "Shirt" if int(data["assetType"]) == 11 else "Pants",
         "creationContext": {
             "creator": {
@@ -88,3 +100,11 @@ async def release(session, id):
 def decode(file_path):
     with Image.open(file_path) as img: metadata = img.info
     return metadata
+
+async def robux(session, user_id):
+    async with session.get(f"https://economy.roblox.com/v1/users/{user_id}/currency", ssl=False) as response:
+        if response.status == 200:
+            data = await response.json()
+            return int(data.get("robux"))
+        else:
+            return 999999

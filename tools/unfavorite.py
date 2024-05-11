@@ -2,37 +2,38 @@ import aiohttp
 import asyncio
 from src import csrf, cprint
 
-async def start(self):
+async def start(self, cookies):
     try:
-        async with aiohttp.ClientSession(cookies={".ROBLOSECURITY": self.cookie}) as session:
-            games = await get_favorites(session, self.id)
-            self.display_theme(1)
-            if games is not None and len(games) >= 1:
-                cprint.info(f"Gathered {len(games)} favorited games")
-                while True:
-                    choice = cprint.user_input(f"Do you want to Fast Unfavorite Games? (y/N) > ")
-                    if choice not in ["yes", "no", "n", "y"]:
-                        continue
-                    break
-
-                if choice in ["no", "n"]:
-                    for game in games:
-                        game_name = game['name']
-                        game_id = game['id']
-
-                        choice = cprint.user_input(f"Do you want to unfavorite: {game_name} (ID: {game_id})? (y/N): ")
-                        if choice in ["yes", "y"]:
-                            await unfavorite(session, game, self.cookie)
+        for cookie in cookies:
+            async with aiohttp.ClientSession(cookies={".ROBLOSECURITY": cookie['cookie']}) as session:
+                games = await get_favorites(session, cookie['id'])
+                self.display_theme(1)
+                if games is not None and len(games) >= 1:
+                    cprint.info(f"Gathered {len(games)} favorited games for {cookie['name']}")
+                    while True:
+                        choice = cprint.user_input(f"Do you want to Fast Unfavorite Games? (y/N) > ")
+                        if choice not in ["yes", "no", "n", "y"]:
                             continue
-                else:
-                    xcsrf = csrf.get(self.cookie)
-                    session.headers.update({"X-Csrf-Token": xcsrf})
+                        break
 
-                    tasks = [asyncio.create_task(fast_unfavorite(session, game)) for game in games]
-                    await asyncio.gather(*tasks)
+                    if choice in ["no", "n"]:
+                        for game in games:
+                            game_name = game['name']
+                            game_id = game['id']
 
-            if games == []:
-                cprint.info(f"No favorited games found")
+                            choice = cprint.user_input(f"Do you want to unfavorite: {game_name} (ID: {game_id})? (y/N): ")
+                            if choice in ["yes", "y"]:
+                                await unfavorite(session, game, cookie['cookie'])
+                                continue
+                    else:
+                        xcsrf = csrf.get(cookie['cookie'])
+                        session.headers.update({"X-Csrf-Token": xcsrf})
+
+                        tasks = [asyncio.create_task(fast_unfavorite(session, game)) for game in games]
+                        await asyncio.gather(*tasks)
+
+                if games == []:
+                    cprint.info(f"No favorited games found")
 
     except Exception as e:
         cprint.error(e)

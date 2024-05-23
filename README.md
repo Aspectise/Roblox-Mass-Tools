@@ -1,8 +1,4 @@
 # Roblox-Mass-Tools
-## Next update at 35 ⭐
-- Ally Bot
-- Mass delete gamepasses
-- Suggest ideas that you would like in the tool
 
 ### Setup
 1. Open settings.json
@@ -11,6 +7,7 @@
 4. Install the packages in requirements.txt if you don't have them
 5. Run main.py
 ### Features:
+- [x] - **Open Source**
 - [x] - **Multi-Cookies**
 - [x] - **Display Cookie Info**
   - [x] - **Display Birthday**
@@ -46,8 +43,9 @@
 - [x] - **Check Group ID** 
 - [x] - **Randomize Avatar**
 - [x] - **Mass Create Outfits**
-- [x] - **Mass Delete Outfits** 
-- [x] - **More soon** 
+- [x] - **Mass Delete Outfits**
+- [x] - **Auto Ally**
+- [x] - **Mass Off Sale Gamepasses**
 
 ## Preview:
 ![image](https://github.com/Aspectise/Roblox-Mass-Tools/assets/90333100/c0bc9892-05a5-4e7d-b636-c30571930214)

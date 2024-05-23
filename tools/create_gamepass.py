@@ -7,16 +7,23 @@ async def start(self, cookies):
     for user in cookies:
         async with aiohttp.ClientSession(cookies={".ROBLOSECURITY": user['cookie']}) as session:
             self.display_theme(1)
+            cprint.info(f"Account: {user['name']}")
             while True:
-                cprint.info(f"Account: {user['name']}")
                 game_id = cprint.user_input("Enter the game id > ")
-                amount = cprint.user_input("How many gamepases do you want to create? > ")
                 try:
                     game_id = int(game_id)
+                    break
+                except ValueError:
+                    cprint.error("Invalid game id.")
+                    continue
+
+            while True:
+                amount = cprint.user_input("How many gamepases do you want to delete? > ")
+                try:
                     amount = int(amount)
                     break
                 except ValueError:
-                    cprint.error("Invalid game id/amount.")
+                    cprint.error("Invalid amount.")
                     continue
                 
             while True:

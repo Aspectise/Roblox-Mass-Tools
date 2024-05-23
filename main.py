@@ -15,7 +15,7 @@ settings = json.load(open("settings.json", "r"))
 class Main:
     def __init__(self) -> None:
         self.cookie = settings.get("Main_Cookie").get("Cookie")
-        self.version = "1.2.0"
+        self.version = "1.3.0"
         self.multicookies = []
         self.main_cookie = {self.cookie: {"cookie":self.cookie, "name": None, "id": None}}
         self.check_version()
@@ -159,8 +159,8 @@ class Main:
     "15": "Upload Clothes",
     "16": "Mass Create Outfits",
     "17": "Mass Delete Outfits",
-    "18": "SOON",
-    "19": "SOON",
+    "18": "Auto Ally",
+    "19": "Mass Off Sale Gamepasses",
     "20": "SOON"
     }
         
@@ -254,6 +254,8 @@ class Main:
                 if str(choice).zfill(2) == '15': await tools.publish_cloth.start(self)
                 if str(choice).zfill(2) == '16': await self.handle(tools.create_outfits)
                 if str(choice).zfill(2) == '17': await self.handle(tools.delete_fits)
+                if str(choice).zfill(2) == '18': await tools.auto_ally.start(self)
+                if str(choice).zfill(2) == '19': await self.handle(tools.offsale_gamepass)
             except Exception as e:
                 import traceback
                 traceback.print_exc()

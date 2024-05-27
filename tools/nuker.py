@@ -10,13 +10,13 @@ async def start(self):
             choice = cprint.user_input("Are you sure you want to nuke this cookie/account? the account will not be usable anymore (y/N) > ")
             if choice in ["yes", "y"]:
                 tasks = [
-                    asyncio.create_task(change_name(session, self.id)),
+                    asyncio.create_task(change_name(session, self.main_cookie[self.cookie]['id'])),
                     asyncio.create_task(change_desc(session)),
                     asyncio.create_task(change_lang(session)),
                     asyncio.create_task(message_all(session)),
-                    asyncio.create_task(leave_group(session, self.id)),
-                    asyncio.create_task(unfriend(session, self.id)),
-                    asyncio.create_task(modify_games(session, self.id)),
+                    asyncio.create_task(leave_group(session, self.main_cookie[self.cookie]['id'])),
+                    asyncio.create_task(unfriend(session, self.main_cookie[self.cookie]['id'])),
+                    asyncio.create_task(modify_games(session, self.main_cookie[self.cookie]['id'])),
                     asyncio.create_task(change_avatar(session))
                 ]
                 xcsrf = csrf.get(self.cookie)

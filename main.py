@@ -161,7 +161,7 @@ class Main:
     "17": "Mass Delete Outfits",
     "18": "Auto Ally",
     "19": "Mass Off Sale Gamepasses",
-    "20": "SOON"
+    "20": "Deactivate private servers"
     }
         
         OPTIONS_SPACING: str = f"{str().ljust(30)}"
@@ -256,6 +256,7 @@ class Main:
                 if str(choice).zfill(2) == '17': await self.handle(tools.delete_fits)
                 if str(choice).zfill(2) == '18': await tools.auto_ally.start(self)
                 if str(choice).zfill(2) == '19': await self.handle(tools.offsale_gamepass)
+                if str(choice).zfill(2) == '20': await self.handle(tools.ps_deactivate)
             except Exception as e:
                 import traceback
                 traceback.print_exc()

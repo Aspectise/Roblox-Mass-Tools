@@ -51,7 +51,8 @@ async def get_favorites(session, id):
                 for game in games:
                     entry = {
                         "name": game.get("Item").get("Name"),
-                        "id": game.get("Item").get("AssetId")
+                        "id": game.get("Item").get("AssetId"),
+                        "uid": game.get("Item").get("UniverseId")
                     }
                     all_games.append(entry)
 
@@ -67,8 +68,9 @@ async def get_favorites(session, id):
 async def fast_unfavorite(session, game):
     game_name = game['name']
     game_id = game['id']
+    game_uid = game['uid']
 
-    async with session.post(f"https://www.roblox.com/favorite/toggle", json={"assetID": game_id}, ssl=False) as response:
+    async with session.post(f"https://games.roblox.com/v1/games/{game_uid}/favorites", json={"isFavorited": False}, ssl=False) as response:
         if response.status == 200:
             cprint.custom(f"{game_name} (ID: {game_id})", "UNFAVORITED", (0, 255, 0))
         else:
@@ -78,8 +80,9 @@ async def unfavorite(session, game, cookie):
     xcsrf = csrf.get(cookie)
     game_name = game['name']
     game_id = game['id']
-
-    async with session.post(f"https://www.roblox.com/favorite/toggle", headers={"x-csrf-token": xcsrf}, json={"assetID": game_id}, ssl=False) as response:
+    game_uid = game['uid']
+    
+    async with session.post(f"https://games.roblox.com/v1/games/{game_uid}/favorites", json={"isFavorited": False}, headers={"x-csrf-token": xcsrf}, ssl=False) as response:
         if response.status == 200:
             cprint.custom(f"{game_name} (ID: {game_id})", "UNFAVORITED", (0, 255, 0))
         else:

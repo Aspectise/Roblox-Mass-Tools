@@ -7,6 +7,7 @@ from PIL import Image
 from PIL.PngImagePlugin import PngInfo
 import traceback
 import re
+import uuid
 
 from src import cprint, csrf
 
@@ -43,11 +44,11 @@ async def start(self):
                     if 'name' not in data:
                         cprint.error(f"Invalid image or old image ({file_path})")
                         continue
-                    await publish(session, file_path, data, group_id)
+                    await publish(session, file_path, data, group_id, self.main_cookie[self.cookie]['id'])
     except Exception:
         traceback.print_exc()
                 
-async def publish(session, image_path, data, group_id):
+async def publish(session, image_path, data, group_id, user_id):
     form_data = FormData()
     description = data["description"]
     new_description = re.sub(r'(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#/%?=~_|!:,.;]*[-A-Z0-9+&@#/%=~_|])|\b(www\.[^\s]+)', '', description, flags=re.IGNORECASE)
@@ -71,7 +72,14 @@ async def publish(session, image_path, data, group_id):
             cprint.success(f"Successfully uploaded clothing ({data['name']})")
             status_data = await check_cloth(session, cdata)
             if status_data:
-                await release(session, status_data['response']["assetId"])
+                item_info = [
+                    "item_id": status_data['response']["assetId"],
+                    "user_id": user_id,
+                    "group_id": group_id,
+                    "name": data["name"],
+                    "description": new_description
+                ]
+                await release(session, item_info)
         else:
             text = await response.text()
             cprint.error(f"Failed to upload cloth: {text}")
@@ -92,8 +100,26 @@ async def check_cloth(session, cloth_data):
                 await asyncio.sleep(5)
     return False
 
-async def release(session, id):
-    async with session.post(f"https://itemconfiguration.roblox.com/v1/assets/{id}/release", json={"priceConfiguration": {"priceInRobux": 5}, "saleStatus": "OnSale", "releaseConfiguration": {"saleAvailabilityLocations": [0,1]}}, ssl=False) as response:
+async def release(session, item_info):
+    data = {    
+        "saleLocationConfiguration": {"saleLocationType": 1, "places": []},
+        "targetId": item_info.get("item_id"),
+        "priceInRobux": 5,
+        "publishingType": 2,
+        "idempotencyToken": str(uuid.uuid4()),
+        "publisherUserId": item_info.get("user_id"),
+        "creatorGroupId": item_info.get("group_id"),
+        "name": item_info.get("name"),
+        "description": item_info.get("description"),
+        "isFree": False,
+        "agreedPublishingFee": 0,
+        "priceOffset": 0,
+        "quantity": 0,
+        "quantityLimitPerUser": 0,
+        "resaleRestriction": 2,
+        "targetType": 0
+    }
+    async with session.post(f"https://itemconfiguration.roblox.com/v1/collectibles", json=data, ssl=False) as response:
         if response.status == 200:
             cprint.success("Clothing went on sale for 5 robux!")
 

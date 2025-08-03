@@ -72,13 +72,13 @@ async def publish(session, image_path, data, group_id, user_id):
             cprint.success(f"Successfully uploaded clothing ({data['name']})")
             status_data = await check_cloth(session, cdata)
             if status_data:
-                item_info = [
+                item_info = {
                     "item_id": status_data['response']["assetId"],
                     "user_id": user_id,
                     "group_id": group_id,
                     "name": data["name"],
                     "description": new_description
-                ]
+                }
                 await release(session, item_info)
         else:
             text = await response.text()
@@ -134,3 +134,4 @@ async def robux(session, user_id):
             return int(data.get("robux"))
         else:
             return 999999
+

@@ -15,7 +15,7 @@ settings = json.load(open("settings.json", "r"))
 class Main:
     def __init__(self) -> None:
         self.cookie = settings.get("Main_Cookie").get("Cookie")
-        self.version = "1.3.0"
+        self.version = "1.3.1"
         self.multicookies = []
         self.main_cookie = {self.cookie: {"cookie":self.cookie, "name": None, "id": None}}
         self.check_version()
@@ -268,4 +268,5 @@ class Main:
 
 if __name__ == "__main__":
     Main()
+
 

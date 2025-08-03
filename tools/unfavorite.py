@@ -43,20 +43,20 @@ async def get_favorites(session, id):
     cursor = ""
     all_games = []
     while True:
-        async with session.get(f"https://www.roblox.com/users/favorites/list-json?assetTypeId=9&itemsPerPage=10000000&userId={id}&cursor={cursor}", ssl=False) as response:
+        async with session.get(f"https://games.roblox.com/v2/users/{id}/favorite/games?cursor=&limit=100&sortOrder=Desc&cursor={cursor}", ssl=False) as response:
             if response.status == 200:
                 data = await response.json()
-                games = data.get("Data").get("Items")
+                games = data.get("data")
 
                 for game in games:
                     entry = {
-                        "name": game.get("Item").get("Name"),
-                        "id": game.get("Item").get("AssetId"),
-                        "uid": game.get("Item").get("UniverseId")
+                        "name": game.get("name"),
+                        "uid": game.get("id"),
+                        "id": game.get("rootPlace").get("id"),
                     }
                     all_games.append(entry)
 
-                nextcursor = data.get("NextCursor")
+                nextcursor = data.get("nextPageCursor")
                 if nextcursor:
                     cursor = nextcursor
                 else:

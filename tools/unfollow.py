@@ -15,7 +15,7 @@ async def start(self, cookies):
                 xcsrf = csrf.get(user['cookie'])
                 session.headers.update({"X-Csrf-Token": xcsrf})
 
-                tasks = [asyncio.create_task(unfollow(session, following["id"], following["name"])) for following in followings]
+                tasks = [asyncio.create_task(unfollow(session, following["id"], following.get("name", "Unknown"))) for following in followings]
                 await asyncio.gather(*tasks)
     except Exception as e:
         traceback.print_exc()
@@ -37,4 +37,5 @@ async def get_followings(session, user_id):
 async def unfollow(session, user_id, username):
     async with session.post(f"https://friends.roblox.com/v1/users/{user_id}/unfollow", json={"targetUserId": user_id}, ssl=False) as response:
         if response.status == 200:
+
             cprint.custom(f"{username} (ID: {user_id})", "UNFOLLOWED", (0, 255, 0))

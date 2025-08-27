@@ -9,7 +9,7 @@ from src import cprint
 
 async def start(self):
     try:
-        async with aiohttp.ClientSession() as session:
+        async with aiohttp.ClientSession(cookies={".ROBLOSECURITY": self.cookie}) as session:
             while True:
                 self.display_theme(1)
                 group_id = cprint.user_input("Enter the group id > ")
@@ -124,3 +124,4 @@ def process_image(filepath):
     img2 = Image.open("src/template.png")
     img1.paste(img2, (0,0), mask = img2)
     img1.save(filepath)
+
